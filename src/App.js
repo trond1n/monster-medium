@@ -1,11 +1,12 @@
 import { BrowserRouter as Router } from "react-router-dom";
+import Topbar from "./components/Topbar/Topbar";
 import Routes from "./pages/routes";
 
 function App() {
   return (
     <div className="App">
-      <h3>Welcome to hooks</h3>
       <Router>
+        <Topbar />
         <Routes />
       </Router>
     </div>
