@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext, Fragment } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { CurrentUserContext } from "../../contexts/currentUser";
+
 const Topbar = () => {
+  const [currentUserState] = useContext(CurrentUserContext);
   return (
     <nav className="navbar navbar-light">
       <div className="container">
@@ -13,16 +16,43 @@ const Topbar = () => {
               Home
             </NavLink>
           </li>
-          <li className="nav-item">
-            <NavLink to="/login" exact className="nav-link">
-              Sign in
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/register" exact className="nav-link">
-              Sign Up
-            </NavLink>
-          </li>
+
+          {currentUserState.isLoggedIn === null && (
+            <Fragment>
+              <li className="nav-item">
+                <NavLink to="/login" exact className="nav-link">
+                  Sign in
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/register" exact className="nav-link">
+                  Sign Up
+                </NavLink>
+              </li>
+            </Fragment>
+          )}
+          {currentUserState.isLoggedIn && (
+            <Fragment>
+              <li className="nav-item">
+                <NavLink to="/articles/new" className="nav-link">
+                  <i className="ion-compose"></i>&nbsp; New Post
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to={`/profiles/${currentUserState.currentUser.username}`}
+                  className="nav-link"
+                >
+                  <img
+                    src={currentUserState.currentUser.image}
+                    alt=""
+                    className="user-pic"
+                  />
+                  &nbsp; {currentUserState.currentUser.username}
+                </NavLink>
+              </li>
+            </Fragment>
+          )}
         </ul>
       </div>
     </nav>
