@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { CurrentUserProvider } from './contexts/currentUser';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <CurrentUserProvider>
+ <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
+  </CurrentUserProvider>,
+ 
   document.getElementById('root')
 );
 

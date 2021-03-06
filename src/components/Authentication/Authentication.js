@@ -1,6 +1,10 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Link, Redirect } from "react-router-dom";
+import { CurrentUserContext } from "../../contexts/currentUser";
 import useFetch from "../../hooks/useFetch";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import BackendErrorMessages from "./components/BackendErrorMessages";
+
 const Authentication = (props) => {
   const isLogin = props.match.path === "/login";
   const pageTitle = isLogin ? "Sign In" : "Sign Up";
@@ -12,7 +16,9 @@ const Authentication = (props) => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [{ response, isLoading, error }, doFetch] = useFetch(apiUrl);
-
+  const [, setToken] = useLocalStorage("token");
+  const [isSuccessfullSubmit, setIsSuccessfullSubmit] = useState(false);
+  const [, setCurrentUserState] = useContext(CurrentUserContext);
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = isLogin ? { email, password } : { email, password, username };
@@ -23,6 +29,23 @@ const Authentication = (props) => {
       },
     });
   };
+  useEffect(() => {
+    if (!response) {
+      return;
+    }
+    setToken(response.user.token);
+    setIsSuccessfullSubmit(true);
+    setCurrentUserState((state) => ({
+      ...state,
+      isLoggedIn: true,
+      isLoading: false,
+      currentUser: response.user,
+    }));
+  }, [response, setToken, setCurrentUserState]);
+
+  if (isSuccessfullSubmit) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <div className="auth-page">
@@ -34,6 +57,7 @@ const Authentication = (props) => {
               <Link to={descriptionLink}>{descriptionText}</Link>
             </p>
             <form onSubmit={handleSubmit}>
+              {error && <BackendErrorMessages backendErrors={error.errors} />}
               <fieldset>
                 {!isLogin && (
                   <fieldset className="form-group">
